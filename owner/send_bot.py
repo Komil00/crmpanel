@@ -8,17 +8,16 @@
 
 from eskiz_sms import EskizSMS
 from django.conf import settings
+from celery import shared_task
 
 
-eskiz = EskizSMS(
-            email='komiltuev@icloud.com',
-            password='BIxAWgiaNUTAlJFq6u6rYgm8rx12fNMt9sLm0huk',
-        )
+eskiz = EskizSMS(email='komiltuev@icloud.com', password='BIxAWgiaNUTAlJFq6u6rYgm8rx12fNMt9sLm0huk',)
 
+@shared_task
 def send(phone, code):
     try:
         eskiz.send_sms(phone, code, from_whom='4546')
-        print("okkko")
+        print("okay")
         return {"status": "success"}
     except Exception as e:
         return {"status": "error", "message": e}
