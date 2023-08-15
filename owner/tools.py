@@ -6,19 +6,19 @@ from django.contrib import messages
 from django.db.models import Q
 import datetime
 from eskiz_sms import EskizSMS
-
+from eskiz_sms.exceptions import EskizException
 
 eskiz = EskizSMS(email='komiltuev@icloud.com', password='BIxAWgiaNUTAlJFq6u6rYgm8rx12fNMt9sLm0huk',)
 
 def send(phone, code):
-    try:
-        eskiz.send_sms(str(phone)[1:], code, from_whom='4546')
-        print("okay")
-        return {"status": "success"}
-    except Exception as e:
-        eskiz.send_sms(phone, code, from_whom='4546')
-        print("okay")
-        return {"status": "success"}
+    # try:
+    eskiz.send_sms(str(phone)[1:], code)
+    print("okay")
+    return {"status": "success"}
+    # except Exception as e:
+    #     eskiz.send_sms(str(phone)[1:], code, from_whom='4546')
+    #     print("okay")
+    #     return {"status": "success"}
     
 
 def register_(request):
