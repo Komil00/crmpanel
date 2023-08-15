@@ -1,0 +1,223 @@
+{% extends 'wrapper.html' %}
+{% block content %}
+<style>
+  .form-register{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    background:  white;
+    opacity: 1;
+    display: none;
+    animation: 1s todown;
+  }
+  @keyframes todown{
+    from{
+      transform:translateY(-800px)
+    }
+    to{
+      transform:translateY(0px)
+    }
+  }
+</style>
+
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="page-header">
+              <h3 class="page-title">
+                <span class="page-title-icon bg-gradient-primary text-white me-2">
+                  <i class="mdi mdi-home"></i>
+                </span> Mening bizneslarim
+              </h3>
+              <nav aria-label="breadcrumb">
+                <ul class="breadcrumb">
+                  <li class="breadcrumb-item active" aria-current="page">
+                    <a href="#" onclick="addBiznes('open')" class="btn btn-rounded btn-gradient-success text-light"><span class="card-title me-2">Biznes qo'shish</span><i class="mdi mdi-plus-circle-outline icon-sm  align-middle"></i></a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+            <div class="row">
+              {% for s in service %}
+              <div class="col-md-4 stretch-card grid-margin">
+                <div class="card bg-gradient-danger card-img-holder text-white service-card">
+                 <a href="{% url 'owner:service_detail' s.id %}" class="text-white d-flex" style="text-decoration: none;">
+                  <div class="card-body">
+                    <img src="/static/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
+                    <h3 class="font-weight-normal mb-3">Biznes turi: {{ s.category }}
+                    </h3>
+                    <h3>Kompaniya Nomi: <h2 class="mb-5">{{ s }}</h2></h3>
+                    <h4 class="card-text">Hozirda mavjud xonalar soni: {{ s.service_rooms.count }} ta</h4>
+
+                  </div>
+                 </a>
+                </div>
+              </div>
+              {% endfor %}
+              
+            </div>
+       
+              </div>
+            </div>
+            
+          </div>
+
+          <!-- <div class="container-scroller">
+            <div class="container-fluid page-body-wrapper full-page-wrapper">
+              <div class="content-wrapper d-flex align-items-center auth"> -->
+
+
+               
+               <div class="container-fluid form-register " >
+                <div class="row ">
+                  <div class="col-lg-8 mx-auto">
+                    <div class="auth-form-light text-left">
+                     
+                      <!-- <h4>New here?</h4> -->
+                      {% if messages %}
+                      {% for message in messages %}
+                      <p class="card-title text-danger mb-3">{{ message}}</p>
+                      {% endfor %}
+                      {% endif %}
+                      <div class="close mb-5">
+                      <a href="#" onclick="addBiznes('close')" class="text-dark" style="float: right;"><h1><i class="mdi mdi-window-close"></i></h1></a>
+                      </div>
+                      <h4 class="font-weight-bold mb-4 text-center"> Biznesni Ro'yhatdan O'tkazish </h6>
+                        <form class="pt-3" method="post" action="{%  url 'owner:service' %}" enctype='multipart/form-data'>
+                        {% csrf_token %}  
+                        <div class="row">
+                          <div class="col-md-6">
+                            
+                            <div class="form-group">
+                              <label for="floatingSelect"> <h4>Firma Nomi</h4></label>
+                              <input type="text" class="form-control form-control-lg" name="name"  required>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="floatingSelect"> <h4>Biznes turi</h4></label>
+                              <select class="form-select p-2" name="category"  required >
+                                {% for c in category %}
+                                <option class="text" value="{{c.name}}">{{c.name}}</option>
+                                {% endfor %}
+                              </select>
+                           </div>
+                          </div>
+                        </div>
+                        
+      
+                         <div class="row">
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="floatingAdres"><h4>Firma Manzil</h4></label>
+                              <input type="text" class="form-control form-control-lg" name="adres" required>
+                            </div>
+                           </div>
+                           <div class="col-md-4">
+                             <div class="form-group">
+                               <label for="floatingPhone"> <h4>Telefon raqam</h4></label>
+                               <input type="text" class="form-control form-control-lg" name="phone" required>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label for="floatingPhone2"> <h4>Zahira Telefon raqam</h4></label>
+                                <input type="text" class="form-control form-control-lg" name="phone_2"required>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label for="floatingSelect"> <h4> Ish Vaqti Boshlanishi </h4></label>
+                                <input type="time" class="form-control form-control-lg" name="working_time_from" required>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label for="floatingSelect"> <h4> Ish Vaqti Tugashi</h4></label>
+                                <input type="time" class="form-control form-control-lg" name="working_time_to"  required>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label for="floatingSelect"> <h4>Ish kunlari</h4> </label>
+                                <select  class="form-select" name="working_days"  required >
+                                  {% for w in weekday %}
+                                  <option  value="{{ w.day_name }}"> {{w.day_name}}</option>
+                                  {% endfor %}
+                                </select>
+                             </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                          <div class="col-md-6">
+                           <div class="form-class">
+                             <label for="floatingPhoto"> <h4>Firma Rasmi</h4></label>
+                             <input type="file" class="form-control"  name="img" >
+                           </div>
+                           
+                          </div>
+                          <div class="col-md-6">
+                          <div class="form-class">
+                            <label for="floatingSelect"> <h4>Firma Haqida</h4></label>
+                            <!-- <textarea class="form-control" name="description" rows="4"  id="message"></textarea> -->
+                            <input type="text" class="form-control " name="description"  required>
+                          </div>
+                          </div>
+                         
+                          </div>
+                          </div>
+                       
+                      <div class="row ">
+                      <h4 class="text mt-3">Firma hozir ish faoliyatidami ?</h4>
+                      <div class="col-md-2 ">
+                        <div class="form-check" >
+                          <input class="form-check-input" value="1" type="radio" name="open_service" id="flexCheckDefault" checked>
+                          <label for="floatingSelect "><h4 >Xa </h4></label>
+                      </div>
+                    </div>
+                     <div class="col-md-2">
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="open_service" id="flexRadioDefault2" >
+                        <label for="floatingSelect"> <h4>Yo'q </h4></label>
+                      </div>
+                     </div>
+                     <div class="col-md-8">
+                       <button style="float: right;" type="submit" class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn" >Saqlash</button>
+                     </div>
+                  
+                  </div>
+      
+                      </form>
+                    </div>
+                  </div>
+                </div>
+               </div>
+              <!-- </div> -->
+              <!-- content-wrapper ends -->
+            <!-- </div> -->
+            <!-- page-body-wrapper ends -->
+          <!-- </div> -->
+
+
+
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+
+
+          <script>
+            let formRegister = document.querySelector('.form-register');
+            console.log(formRegister)
+            function addBiznes(cmd){
+              if (cmd === 'open'){
+                formRegister.style.display = 'block';
+              }else{
+                formRegister.style.display = 'none';
+              }
+            }
+          </script>
+      {% endblock %}

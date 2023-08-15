@@ -1,0 +1,293 @@
+{% extends 'wrapper.html' %}
+
+
+{% block li %}
+
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'owner:brons' room.service.id %}">
+    <span class="menu-title">Taqvim</span>
+    <i class="mdi mdi-calendar menu-icon"></i>
+  </a>
+</li> 
+{% endblock  %}
+
+{% block content %}
+
+<!-- Example -->
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+<div class="main-panel p-5 ">
+
+<!-- <div class="container "> -->
+  
+  <div class="row " >
+
+   <!-- Button trigger modal -->
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Xonani ochirish.</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-dal-content">
+           
+            <div class="modhidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Xonani ochirishdi xoxlaysizmi ?
+      </div>
+      <div class="modal-footer">
+
+        <a href="{% url 'owner:delete_room' room.id room.service.id %}" style="text-decoration: none;"> <button type="button" class="btn btn-danger  me-2" data-toggle="modal">
+          Xa 
+        </button></a>
+        <button type="button" class="btn btn-primary  close" data-dismiss="modal" aria-label="Close"> Yoq</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+     <div class="col-md-6 ">
+      <div class="card">
+
+    
+        <div id="CarouselTest" class="carousel slide " data-ride="carousel">
+
+          <!-- <ol class="carousel-indicators">
+            <li data-target="#CarouselTest" data-slide-to="0" class="active"></li>
+            <li data-target="#CarouselTest" data-slide-to="1"></li>
+            <li data-target="#CarouselTest" data-slide-to="2"></li>
+          </ol> -->
+
+          <div class="carousel-inner">
+            {% for i in room.room_photos.all %}
+            
+            {% if forloop.first %}
+            <div class="carousel-item active">
+            {% else %}
+            <div class="carousel-item">
+            {% endif %}
+            <div class="" style="width: 450px; height: 100%;">
+              <!-- <button type="button"  data-toggle="modal" data-target="#exampleModal2" class="btn btn mdi mdi-delete text-danger"  style="font-size: 24px; position:absolute; right:20px; top:20px; background:rgba(0, 0, 0, 0.5); padding:5px; border-radius:5px;">fjuuuuu</button> -->
+              <img class="d-block" src="{{ i.image.url }}" width="100%" height="100%" alt="">
+              <!-- <a href="{{i.image.url}}">              </a> -->
+          
+             <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Xonani ochirish.</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-dal-content">
+                       
+                        <div class="modhidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    Shu rasmni ochirishdi xoxlaysizmi ?
+                  </div>
+                  <div class="modal-footer">
+                    <img src="{{i.image.url}}" alt="" width="100%" height="100%">
+                    <a href="{% url 'owner:delete_image' i.id  room.id%}">  <button type="button" class="btn btn-danger  me-2" data-toggle="modal">
+                      Xa 
+                    </button></a>
+                    <button type="button" class="btn btn-primary  close" data-dismiss="modal" aria-label="Close"> Yoq</button>
+            
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+            </div>
+            
+            {% endfor %}
+            
+            <a class="carousel-control-prev" href="#CarouselTest" role="button" data-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only"></span>
+            </a>
+            <a class="carousel-control-next" href="#CarouselTest" role="button" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only"></span>
+          </a>
+          </div>
+        </div>
+        </div>
+
+          <div class="card">
+            <div class="card-body">
+              <form action="" method="post" class="form mb-5" enctype='multipart/form-data'>{% csrf_token %}
+                <input type='file' id="getFile" name="image" >
+                <button type="submit" class="btn btn-gradient-info  mt-2 ml-5">Yuklash <i class="icon-lg mdi mdi-upload"></i></button>
+            <button type="button" class="btn btn-gradient-danger  mt-2" data-toggle="modal" data-target="#exampleModal2" style="margin-left:10px;">Rasmni o'chirish<i class="icon-lg mdi mdi-delete" ></i></button>
+                
+              </form>
+             
+              <form class="forms-sample" method="post" action="">
+                {% csrf_token %}
+                <div class="form-group row">
+                  <label for="exampleInputUsername2" class="col-sm-3 col-form-label">Xona nomi</label>
+                  <div class="col-sm-9">
+                    <input type="text" value="{{ room.name }}" class="form-control" name="name" id="exampleInputUsername2" placeholder="Xona nomi (1-xona)">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="exampleInputEmail2" class="col-sm-3 col-form-label">Xona egasi</label>
+                  <div class="col-sm-9">
+                    <input type="text" value="{{ room.owner }}" class="form-control" name="owner" id="exampleInputEmail2" placeholder="Xona egasi">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="exampleInputMobile" class="col-sm-3 col-form-label">Manzil</label>
+                  <div class="col-sm-9">
+                    <input type="text" value="{{ room.adres }}" class="form-control" name="adres" id="exampleInputMobile" placeholder="Manzil">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="exampleInputPassword2" class="col-sm-3 col-form-label">O'lchami </label>
+                  <div class="col-sm-9">
+                    <input type="text" value="{{ room.size }}" class="form-control" name="size" id="exampleInputPassword2" placeholder="O'lchami">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="exampleInputConfirmPassword2" class="col-sm-3 col-form-label">Xona haqida</label>
+                  <div class="col-sm-9">
+                    <textarea name="description" id="" class="form-control" cols="30" rows="4">{{ room.description }}</textarea>
+                  </div>
+                </div>
+              
+                <button type="submit" class="btn btn-gradient-primary me-2 mdi mdi-settings me-2" style="margin-left: 200px;">O'zgartirish</button>
+
+             
+                
+              </form>
+
+            </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6 ">
+      <div class="card">
+        <div class="card-body">
+          <div class="card-text">{{ room.name }} ni band qilish</div>
+          <form action="{% url 'owner:add_bron' %}" method="post" class="form mt-3 p-3">
+            {% csrf_token %}
+            <div class="form-group row d-none">
+              <label for="" class="col-sm-3 col-form-label">Kimning nomiga</label>
+              <div class="col-sm-9">
+                <input type="text" value="{{ room.id }}"  class="form-control" name="room_" id="exampleInputMobile" placeholder="Ism">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="exampleInputMobile" class="col-sm-3 col-form-label">Kimning nomiga</label>
+              <div class="col-sm-9">
+                <input type="text"  class="form-control" name="name" id="exampleInputMobile" placeholder="Ism">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="exampleInputMobile" class="col-sm-3 col-form-label">Telefon raqam</label>
+              <div class="col-sm-9">
+                <input type="text"  class="form-control" name="phone" id="exampleInputMobile" placeholder="Telefon">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="date_"> <h5>Sanani tanlang</h5></label>
+                  <input type="date" id="date_" class="form-control form-control-lg" name="date" required>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="timefrom"> <h5>00:00 dan  </h5></label>
+                  <input type="time" id="timefrom" class="form-control form-control-lg" name="bron_time_from" required>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="timeto"> <h5>00:00 gacha</h5></label>
+                  <input type="time" id="timeto" class="form-control form-control-lg" name="bron_time_to"  required>
+                </div>
+              </div>
+              
+            </div>
+            <div class="text-left">
+              <button type="submit" class="btn btn-gradient-warning ">Bron qilish</button>
+            </div>
+
+
+          </form>
+
+        </div>
+
+            </div>
+            <button type="button" class="btn btn-gradient-danger mdi mdi-delete me-2" data-toggle="modal" data-target="#exampleModal" style = "margin-top: 370px; margin-left:200px; font-size: larger;">
+              Xonani ochirish
+               </button>
+        </div>
+        
+        </div>
+      </div>
+      
+    </div>
+
+
+
+
+  </div>
+  </div>
+  
+  <!-- End of card -->
+
+ 
+
+
+
+
+<style>
+  body {
+  background-color:  #eee;
+}
+
+.carousel-indicators li {
+    border-radius: 12px;
+    width: 12px;
+    height: 12px;
+    background-color: #404040;
+}
+.carousel-indicators li {
+    border-radius: 12px;
+    width: 12px;
+    height: 12px;
+    background-color: #404040;
+}
+.carousel-indicators .active {
+    background-color: white;
+    max-width: 12px;
+    margin: 0 3px;
+    height: 12px;
+}
+.carousel-control-prev-icon {
+ background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E") !important;
+}
+
+.carousel-control-next-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E") !important;
+}
+
+
+.btn {
+  margin-top: auto;
+}
+</style>
+
+{% endblock %}

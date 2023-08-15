@@ -1,0 +1,228 @@
+{% extends 'wrapper.html' %}
+
+{% block li %}
+
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'owner:brons' service_pk %}">
+    <span class="menu-title">Taqvim</span>
+    <i class="mdi mdi-calendar menu-icon"></i>
+  </a>
+</li> 
+{% endblock  %}
+
+
+{% block content %}
+
+
+<div class="main-panel">
+    <div class="content-wrapper">
+
+
+      <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title text-center" id="staticBackdropLabel">Bekor qilish</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form action="{% url 'owner:info_brons' %}" method="post" >
+                {% csrf_token %}
+                <div class="form-group row d-none">
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control id_bron" name="id_bron" id="exampleInputUsername2" >
+                  </div>
+                </div>
+                <div class="form-group row d-none">
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control id_service" name="id_service" value="{{ service_pk }}" id="exampleInputUsername2" >
+                  </div>
+                </div>
+                <div class="form-group row">
+                    <label for="exampleFormControlSelect2" class="col-sm-3 ">Bekor qiluvchi</label>
+                  <div class="col-sm-9">
+                    <select class="form-control" name="canceller"  id="exampleFormControlSelect2">
+                    
+                      <option value="owner">Ega</option>
+                      <option value="customer">Mijoz</option>
+                    </select>
+                  </div>
+                </div>
+            
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Orqaga</button>
+                <button  type="submit" class="btn btn-primary">Tasdiqlash</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+        <div class="container">
+          <div class="row" >
+              <span class="menu-title text-secondary text-center">{{ date | date:"d"}}-{{ month }} {{ date | date:"Y"}}-yil, {{ day }}</span>
+              
+              <div class="col-md-9 mt-2" style="margin:0 auto; float:none;">
+            {% if brons.count != 0 %}
+            {% for r in rooms %}  
+                
+            {% for b in brons %}
+            {% if b.room.id == r.id %}
+            {% if b.status == 'cancelled' %}
+            {% else %}
+<div class="modal fade bd-example-modal-lg text-left" id="staticBackdrop-edit-{{ b.id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" >
+  <div class="modal-dialog modal-lg" >
+      <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+          <div class="modal-body">
+           <div class="card ">
+              <div class="card-body">                                   
+                <div class="card-title">Bron ma'lumotlarini o'zgartirish</div>
+                
+           
+              <div class="text d-block">
+                <span class="text-danger text-center m-3" style="font-size:14px;">{{ message }}</span>
+              </div>
+              <div>
+                <form action="{% url 'owner:update_bron' b.id %}" method='post' class="form p-3">
+                  {% csrf_token %}
+                  <div class="form-group">
+                    <label for="exampleFormControlSelect2"><h5>Bron qilingan joy </h5></label>
+                    <select class="form-control" name='room' id="exampleFormControlSelect2">
+                      {% for r in rooms %}
+                      {% if b.room.id == r.id %}
+                      <option value="{{ r.id }}" selected>{{ r.name }}</option>
+                      {% else %}
+                      <option value="{{ r.id }}" >{{ r.name }}</option>
+                      {% endif %}
+                      {% endfor %}
+        
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label > <h5>Ismi</h5></label>
+                    <input type="input"  class="form-control form-control-lg" name="name"  required value="{{ b.name }}">
+                  </div>
+                  <div class="form-group">
+                    <label > <h5>Telefon raqam</h5></label>
+                    <input type="input"  class="form-control form-control-lg" name="phone" value="{{ b.phone }}" required>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label for="date_"> <h5>Sanani tanlang</h5></label>
+                        <input type="date" id="date_" class="form-control form-control-lg" name="date" value="{{ b.date | date:"Y-m-d" }}" required>
+                      </div>
+                    </div>
+        
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label for="timefrom"> <h5>00:00 dan  </h5></label>
+                        <input type="time" id="timefrom" class="form-control form-control-lg" name="bron_time_from"  value="{{ b.time_from | date:"H:i" }}" required>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label for="timeto"> <h5>00:00 gacha</h5></label>
+                        <input type="time" id="timeto" class="form-control form-control-lg" name="bron_time_to"  value="{{ b.time_to  | date:"H:i"  }}"  required>
+                      </div>
+                    </div>
+                </div>
+           
+        
+              </div>
+              <div class="text-left">
+                <button type="submit" class="btn btn-gradient-warning m-3">O'zgartirish</button>
+              </div>
+        
+                  </div>
+                  
+                
+                
+                </form>
+              </div>
+                                
+                        
+                </div>
+            
+            </div>
+        </div>
+            </div>
+              {% endif %}
+              {% else %}
+              {% endif %}
+              {% endfor %}
+
+    <!-- start table -->
+    <div class="card mt-3 shadow bg-white rounded">
+      <div class="card-header ">
+          {{ r }}
+      </div>
+      <div class="card-body p-5">
+          <table class="table table-hover" >
+              <thead>
+                <tr>
+                  <th>Ism</th>
+                  <th>Telefon raqami</th>
+                  <th>Band qilingan vaqt</th>
+                  <th>O'zgartirish</th>
+                  <th>Bekor qilish</th>
+                </tr>
+              </thead>
+              <tbody>
+                        {% for b in brons %}
+                        {% if b.room.id == r.id %}
+                        {% if b.status == 'cancelled' %}
+                        {% else %}
+                        <tr>
+                  
+                  <td >{{ b.name }}</td>
+                  <td > {{ b.phone }}</td>
+                  <td >{{ b.time_from | date:"H:i" }}-{{ b.time_to | date:"H:i" }}</td>
+                  <td> <a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop-edit-{{ b.id }}"><i class="mdi mdi-border-color text-warning " style="font-size:17px;"></i></a></td>
+                  <td><a href="#" onclick=(cancelBron('{{ b.id }}')) data-bs-toggle="modal" data-bs-target="#staticBackdrop" ><i class="mdi mdi-delete text-danger" style="font-size:17px;"></i></a></td>
+                </tr>
+                        {% endif %}
+                        {% else %}
+                        {% endif %}
+                        {% endfor %}
+       
+              </tbody>
+            </table>
+          </div>
+        </div>                
+
+        {% endfor %}
+            {% else %}
+            
+              <h4 class="card-title text-center"style="margin-top:200px;" > Ushbu sana band qilinmagan !</h4>
+          
+            {% endif %}
+              </div>
+
+          </div>
+
+        </div>
+  </div>
+
+
+
+    </div>
+    </div>
+
+    <script>
+      function cancelBron(pk){
+        let id = document.querySelector('.id_bron').defaultValue = pk;
+        //let service_tr = document.querySelector('.id_service_tr').getAttribute('data-id');
+        //let service_id = document.querySelector('.id_service').defaultValue = service_tr;
+      }
+  
+
+    </script>
+
+
+{% endblock content %}

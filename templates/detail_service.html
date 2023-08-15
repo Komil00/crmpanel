@@ -1,0 +1,550 @@
+{% extends 'wrapper.html' %}
+
+{% block li %}
+
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'owner:brons' service.id %}">
+    <span class="menu-title">Taqvim</span>
+    <i class="mdi mdi-calendar menu-icon"></i>
+  </a>
+</li> 
+{% endblock  %}
+
+{% block content %}
+
+
+
+<div class="main-panel">
+    <div class="content-wrapper">
+
+
+
+
+    <a href="#" onclick="addBiznes('open_room')" class="btn btn-rounded bg-gradient-success text-white mb-3" style="width: 20%; ">Xona qo'shish <i class="mdi mdi-plus-circle-outline"></i></a>
+    <div class="row">
+        <div class="col-md-8 card-scroll" style="overflow-y: scroll; max-height:590px;">
+            
+            {% for r in rooms %}
+                              
+
+            <div class="card mb-3" >
+                <div class="row g-0">
+                  <div class="col-md-4 p-1">
+                   <div class="foto-detail p-2"  >
+                    {% if r.room_photos.all.0.image.url %}
+                    <img src="{{  r.room_photos.all.0.image.url }}" width="100%" height="100%" class="img-fluid rounded-start" alt="">
+                    {% else %}
+                    <img src="/media/room_photos/7bcb2df2c6c93fb062bb90efaeb5ea9c.jpg"  class="img-fluid rounded-start" alt="">
+
+                    {% endif %}
+                   </div>
+                  </div>
+                  <div class="col-md-8">
+                    <div class="card-body" style="float: right;">
+                        <div class="card-text mt-2"><i class="mdi mdi-comment-text text-primary "></i> Izohlar soni: {{ r.comments_count }} ta</div>
+                        <div class="card-text mt-2"><i class="mdi mdi-heart text-danger "></i> Yoqdi: 1 ta</div>
+                        <div class="card-text mt-2"><a href="{% url  'owner:room_update' r.id  %}"><i class="mdi mdi-eye text-primary"></i> Batafsil ma'lumot</a></div>
+                    </div>
+                    <div class="card-body">
+                      <h5 class="card-title">{{ r.name }}</h5>
+                      <h6>Reyting: <i class="mdi mdi-star text-warning"></i><i class="mdi mdi-star text-warning"></i><i class="mdi mdi-star text-warning"></i><i class="mdi mdi-star text-warning"></i></h6>
+                      <h6>Xona egasi: {{ r.owner }}</h6>
+                      <a href="{% url  'owner:room_update' r.id  %}"><span class="badge bg-gradient-info">Bron qilish </span></a>
+                      <a href="{% url  'owner:room_update' r.id  %}"><span class="badge bg-gradient-primary">O'zgartirish<i class="mdi mdi-settings"></i></span></a>
+
+                      
+                      
+                      <p class="card-text mt-3 ">
+                          {% for b in r.room_brons.all %}
+
+                          {% if b.status == 'cancelled' %}
+                          {% else %}
+                          {% if b.date == today %}
+                          <small class="text-danger d-block"> {{ b.time_from | date:"H:i" }} dan  {{ b.time_to | date:"H:i" }} gacha band </small>
+                          {% else %}
+                          {% endif %}
+                          {% endif %}
+
+                        {% endfor %}
+                        </p>
+
+                    </div>
+                  </div>
+
+
+                </div>
+                <div class="accordion accordion-flush " id="accordionFlushExample-{{ r.id }}">
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="flush-headingOne">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne-{{ r.id }}" aria-expanded="false" aria-controls="flush-collapseOne">
+                        Band qilingan sana va vaqtlar ro'yxati
+                      </button>
+                    </h2>
+                    <div id="flush-collapseOne-{{ r.id }}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample-{{ r.id }}">
+                      <div class="accordion-body">
+
+                         <div class="row">
+                                <div class="col-md-4" style="margin: 0 auto; float:none;">
+                                    <input type="date" onchange="filterRows2('{{ r.id }}')"  class="form-control cal-date" id="datefilter-{{ r.id }}" data-id="{{ r.id }}" data-date-split-input="true">
+                                </div>
+                                
+                          </div>
+                        <table id="testTable" class="table table-hover table-border mt-3 " border="1">
+                            <thead>
+                              <tr>
+                                <th>№</th>
+                                <th>Band qiluvchi ismi</th>
+                                <th>Telefon raqami</th>
+                                <th>Sana</th>
+                                <th>Band qilingan vaqt</th> 
+                                <th>Bekor qilish</th>
+                              </tr>
+                            </thead>
+                          <tbody>
+                            {% for b in r.room_brons.all %}
+                            <!-- Modal -->
+                            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                              <div class="modal-dialog">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title text-center" id="staticBackdropLabel">Bekor qilish</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <form action="{% url 'owner:cancel_bron' %}" method="post" >
+                                      {% csrf_token %}
+                                      <div class="form-group row d-none">
+                                        <div class="col-sm-9">
+                                          <input type="text" class="form-control id_bron" name="id_bron" id="exampleInputUsername2" placeholder="Xona nomi (1-xona) id={{ r.id }}">
+                                        </div>
+                                      </div>
+                                      <div class="form-group row d-none">
+                                        <div class="col-sm-9">
+                                          <input type="text" class="form-control id_service" name="id_service" id="exampleInputUsername2" placeholder="Xona nomi (1-xona) id={{ r.id }}">
+                                        </div>
+                                      </div>
+                                      <div class="form-group row">
+                                          <label for="exampleFormControlSelect2" class="col-sm-3 ">Bekor qiluvchi</label>
+                                        <div class="col-sm-9">
+                                          <select class="form-control" name="canceller"  id="exampleFormControlSelect2">
+                                            <option value="owner">Ega</option>
+                                            <option value="customer">Mijoz</option>
+                                          </select>
+                                        </div>
+                                      </div>
+                                  
+
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Orqaga</button>
+                                      <button  type="submit" class="btn btn-primary">Tasdiqlash</button>
+                                    </div>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+
+
+                                {% if b.status == 'cancelled' %}
+                                
+                                {% else %}
+                                <tr class="tr-{{ r.id }}">
+                                  <td>{{ forloop.counter }}</td>
+                                  <td>{{ b.name }}</td>
+                                  <td>{{ b.phone }}</td>
+                                  <td>{{ b.date | date:"d/m/Y" }}</td>
+                                  <td><span>{{ b.time_from  |date:"H:i" }} - {{b.time_to |date:"H:i " }} </span> </td>
+                                  <td class="text-danger"><a href="#" onclick="cancelBron('{{ b.id }}')" class="id_service_tr" data-id="{{ service.id }}" type="button"  data-bs-toggle="modal" data-bs-target="#staticBackdrop" ><i class="mdi mdi-delete" style="font-size: 18px; color:red;"></i></a></td>
+                                </tr>
+                                {% endif %}
+
+                                
+                           
+                                {% endfor %}
+                            
+                          </tbody>
+                        
+                        </table>
+                        <div class="text-center table-msg d-none">
+                          <small >Ushbu sanada bronlar mavjud emas !</small>
+                        </div>
+
+                     
+                      </div>
+                    </div>
+                  </div>
+                 
+                </div>
+
+              </div>
+              {% endfor %}
+
+        </div>
+        <div class="col-md-4">
+          <div class="row">
+            <div class="card">
+              <div class="col-md-12" >
+                  <img src="{{ service.image.url }}" width="100%" height="100%" class="img-fluid rounded-start p-2" alt="">
+                </div>
+                <div class="col-md-12">
+                    <div class="card-body">
+                    
+                        <h4 class="card-text"> <i class="mdi mdi-home-modern text-primary"></i> Kompaniya nomi: <span class="font-weight-bold">{{ service.name }}</span></h4>
+                        
+                        <h4 class="card-text"><i class="mdi mdi-cash-multiple text-primary"></i> Biznes turi: <span class="font-weight-bold">{{ service.category }}</span></h4>
+                        <h4 class="card-title"><i class="mdi mdi-map-marker text-primary"></i> Manzil: <span class="font-weight-bold">{{ service.adres }}</h4>
+                        <h5 class="text"><i class="mdi mdi-phone text-primary"></i> Telefon raqam: {{ service.phone }}</h5>
+                        <h5 class="text"><i class="mdi mdi-phone text-primary"></i> Telefon raqam: {{ service.phone_2 }}</h5>
+                        <h5 class="text"><i class="mdi mdi-clock text-primary"></i> Ish vaqti: {{ service.working_time_from | date:'H:i' }}-{{ service.working_time_to | date:'H:i' }} </h4>
+                        {% for days in service.working_days.all %}
+                        <h5 class="text"><i class="mdi mdi-calendar-text text-primary"></i> Ish kunlari: {{ days }}</h5>
+                        {% endfor %}
+                        {%  if service.open_service %}
+                        <h5 class="text">Ish faoliyatidami ?: Ha</h5>
+                        {% else %}
+                        <h5 class="text">Ish faoliyatidami ?: Yo'q</h5>
+                        {% endif %}
+                        <h5 class="text"><i class="mdi mdi-information-outline text-primary"></i> Ma'lumot: {{ service.description }}</h5>
+                        <a href="#" onclick="addBiznes('open')" class="btn btn-inverse-info mt-4">Tahrirlash <i class="mdi mdi-pencil"></i></a>
+                    </div>
+                </div>
+               </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+<div class="container-fluid form-register " >
+    <div class="row ">
+      <div class="col-lg-8 mx-auto">
+        <div class="auth-form-light text-left">
+         
+          <!-- <h4>New here?</h4> -->
+          {% if messages %}
+          {% for message in messages %}
+          <p class="card-title text-danger mb-3">{{ message}}</p>
+          {% endfor %}
+          {% endif %}
+          <div class="close mb-5">
+          <a href="#" onclick="addBiznes('close')" class="text-dark" style="float: right;"><h1><i class="mdi mdi-window-close"></i></h1></a>
+          </div>
+          <h4 class="font-weight-bold mb-4 text-center"><span class="text-primary">{{ service.name }}</span> ma'lumotlarini o'zgartirish</h6>
+            <form class="pt-3" method="post" action="" enctype='multipart/form-data'>
+            {% csrf_token %}  
+            <div class="row">
+              <div class="col-md-6">
+                
+                <div class="form-group">
+                  <label for="floatingSelect"> <h4>Firma Nomi </h4></label>
+                  <input type="text" class="form-control form-control-lg" value="{{ service.name }}" name="name"  required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="floatingSelect"> <h4>Biznes turi</h4></label>
+                  <select class="form-select p-2" name="category"  required >
+                    {% for c in category %}
+                    {% if c ==  service.category %}
+                      <option selected value="{{ c }}">{{ c }}</option>
+                    {% else %}
+                    <option  value="{{ c }}">{{ c }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+               </div>
+              </div>
+            </div>
+            
+
+             <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="floatingAdres"><h4>Firma Manzil</h4></label>
+                  <input type="text" value="{{ service.adres }}" class="form-control form-control-lg" name="adres" required>
+                </div>
+               </div>
+               <div class="col-md-4">
+                 <div class="form-group">
+                   <label for="floatingPhone"> <h4>Telefon raqam</h4></label>
+                   <input type="text" class="form-control form-control-lg" value="{{ service.phone }}" name="phone" required>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="floatingPhone2"> <h4>Zahira Telefon raqam</h4></label>
+                    <input type="text" value="{{ service.phone_2 }}" class="form-control form-control-lg" name="phone_2"required>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="floatingSelect"> <h4> Ish Vaqti Boshlanishi </h4></label>
+                    <input type="time" value="{{ service.working_time_from | date:'H:i' }}" class="form-control form-control-lg" name="working_time_from" required>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="floatingSelect"> <h4> Ish Vaqti Tugashi</h4></label>
+                    <input type="time" value="{{ service.working_time_to | date:'H:i' }}"  class="form-control form-control-lg" name="working_time_to"  required>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="floatingSelect"> <h4>Ish kunlari</h4> </label>
+                    <select  class="form-select" name="working_days"  required >
+                      {% for w in weekday %}
+                      {% for d in service.working_days.all  %}
+                      {% if w == d %}
+                      <option selected value="{{ w }}"> {{ w }}</option>
+                      {% else %}
+                      <option  value="{{ w }}"> {{ w }}</option>
+                      {% endif %}
+                      {% endfor %}
+                      {% endfor %}
+                    </select>
+                 </div>
+                </div>
+              </div>
+              <div class="row">
+              <div class="col-md-6">
+               <div class="form-class">
+                 <label for="floatingPhoto"> <h4>Firma Rasmi</h4></label>
+                 <input type="file" class="form-control"  name="img" >
+               </div>
+               
+              </div>
+              <div class="col-md-6">
+              <div class="form-class">
+                <label for="floatingSelect"> <h4>Firma Haqida</h4></label>
+                <!-- <textarea class="form-control" name="description" rows="4"  id="message"></textarea> -->
+                <input type="text" class="form-control " value="{{ service.description }}" name="description"  required>
+              </div>
+              </div>
+             
+              </div>
+              </div>
+           
+          <div class="row ">
+          <h4 class="text mt-3">Firma hozir ish faoliyatidami ?</h4>
+          {% if service.open_service == True %}
+          <div class="col-md-2 ">
+            <div class="form-check" >
+              <input class="form-check-input" value="1" type="radio" name="open_service" id="flexCheckDefault" checked>
+              <label for="floatingSelect "><h4 >Xa </h4></label>
+          </div>
+        </div>
+         <div class="col-md-2">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="open_service" id="flexRadioDefault2" >
+            <label for="floatingSelect"> <h4>Yo'q </h4></label>
+          </div>
+         </div>
+        {% else %}
+        <div class="col-md-2 ">
+            <div class="form-check" >
+              <input class="form-check-input" value="1" type="radio" name="open_service" id="flexCheckDefault" >
+              <label for="floatingSelect "><h4 >Xa </h4></label>
+          </div>
+        </div>
+         <div class="col-md-2">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="open_service" id="flexRadioDefault2" checked>
+            <label for="floatingSelect"> <h4>Yo'q </h4></label>
+          </div>
+         </div>
+         {% endif %}
+         <div class="col-md-8">
+           <button style="float: right;" type="submit" class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn" >Saqlash</button>
+         </div>
+      
+      </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+<div class="container-fluid form-register room_add">
+  <div class="row">
+    <div class="col-md-6  stretch-card" style="margin: 0 auto; float: none;">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title text-center">Xona qo'shish</h4>
+          <p class="card-description">  </p>
+          <form class="forms-sample" method="post" action="{% url 'owner:room_create' service.id %}">
+            {% csrf_token %}
+            <div class="form-group row">
+              <label for="exampleInputUsername2" class="col-sm-3 col-form-label">Xona nomi</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" name="name" id="exampleInputUsername2" placeholder="Xona nomi (1-xona)">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="exampleInputEmail2" class="col-sm-3 col-form-label">Xona egasi</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" name="owner" id="exampleInputEmail2" placeholder="Xona egasi">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="exampleInputMobile" class="col-sm-3 col-form-label">Manzil</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" name="adres" id="exampleInputMobile" placeholder="Manzil">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="exampleInputPassword2" class="col-sm-3 col-form-label">O'lchami (ixtiyoriy)</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" name="size" id="exampleInputPassword2" placeholder="O'lchami">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="exampleInputConfirmPassword2" class="col-sm-3 col-form-label">Xona haqida</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" name="description" id="exampleInputConfirmPassword2" placeholder="info">
+              </div>
+            </div>
+          
+            <a href="#" onclick="addBiznes('close_room')" class="btn btn-light">Orqaga</a>
+            <button type="submit" class="btn btn-gradient-primary me-2">Qo'shish</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+
+
+<script>
+
+    function cancelBron(pk){
+      let id = document.querySelector('.id_bron').defaultValue = pk;
+      let service_tr = document.querySelector('.id_service_tr').getAttribute('data-id');
+      let service_id = document.querySelector('.id_service').defaultValue = service_tr;
+    }
+
+
+
+  function filterRows2(id) {
+    var from = document.getElementById(`datefilter-${id}`).value;
+    let tr_id = document.querySelectorAll(`.tr-${id}`);
+    
+    
+    if (!from) { // no value for from and to
+        return;
+      }
+    
+      from = from || '1970-01-01'; // default from to a old date if it is not set
+    
+      var dateFrom = moment(from);
+      //
+      tr_id.forEach(element => {
+          var val = $(element).find("td:nth-child(4)").text();
+          var dateVal = moment(val, "DD/MM/YYYY");
+          var visible = (dateVal.isSame(dateFrom));
+        
+          if (visible === false){
+            $(element).css('display', 'none');
+            
+          }else{
+            $(element).css('display', '');
+  
+          }
+      });
+     
+
+    }
+
+
+    window.onload = function filterRows() {
+      let date = document.querySelectorAll('.cal-date');
+      var today = new Date();
+      
+      
+      let from = 0
+      date.forEach(element => {
+        let id = element.getAttribute('data-id');
+        from = element.value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+      });
+     
+      if (!from) { // no value for from and to
+        return;
+      }
+    
+      from = from || '1970-01-01'; // default from to a old date if it is not set
+    
+      var dateFrom = moment(from);
+    
+      $('#testTable tbody tr').each(function(i, tr) {
+        var val = $(tr).find("td:nth-child(4)").text();
+        var dateVal = moment(val, "DD/MM/YYYY");
+        var visible = (dateVal.isSame(dateFrom));
+      
+        if (visible === false){
+          $(tr).css('display', 'none');
+ 
+          
+        }else{
+          $(tr).css('display', '');
+        
+        }
+      });
+    }
+    
+
+  </script>
+    <script>
+        let formRegister = document.querySelector('.form-register');
+        let roomAdd = document.querySelector('.room_add');
+        function addBiznes(cmd){
+          if (cmd === 'open'){
+            // roomAdd.style.display = 'none';
+            formRegister.style.display = 'block';
+          }else if(cmd === 'close'){
+            formRegister.style.display = 'none';
+            // roomAdd.style.display = 'block';
+          }else if(cmd === 'open_room'){
+            roomAdd.style.display = 'block';
+          }else if(cmd === 'close_room'){
+            roomAdd.style.display = 'none';
+          }
+        }
+      </script>
+
+    <style>
+        .card-scroll::-webkit-scrollbar{
+            display: none;
+        }
+        .form-register{
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        background:  white;
+        opacity: 1;
+        display: none;
+        animation: 1s todown;
+      }
+      @keyframes todown{
+        from{
+          transform:translateY(-800px)
+        }
+        to{
+          transform:translateY(0px)
+        }
+      }
+    </style>
+    
+
+
+
+
+{% endblock content %}
