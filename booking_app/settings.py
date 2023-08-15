@@ -25,14 +25,15 @@ SECRET_KEY = 'django-insecure-&0chn#rtm0&xj3p_47f3yo6gxeku5zru4w7ktv4+zw#vdz!9g3
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-SSL_REDIRECT = True
+# SSL_REDIRECT = True
 
 DEBUG = True
+ALLOWED_HOSTS = ['*']
 
-if DEBUG:
-    from booking_app.locale_settings import *
-else:    
-    from booking_app.pro_settings import *
+# if DEBUG:
+#     from booking_app.locale_settings import *
+# else:    
+#     from booking_app.pro_settings import *
 
 AUTH_USER_MODEL = "main.User"
 
@@ -63,6 +64,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'booking_app.urls'
+
 
 
 REST_FRAMEWORK = {
@@ -105,6 +107,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'booking_app.wsgi.application'
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Database

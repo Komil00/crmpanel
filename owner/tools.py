@@ -16,8 +16,9 @@ def send(phone, code):
         print("okay")
         return {"status": "success"}
     except Exception as e:
-        print('chumo')
-        return {"status": "error", "message": e}
+        eskiz.send_sms(phone, code, from_whom='4546')
+        print("okay")
+        return {"status": "success"}
     
 
 def register_(request):
