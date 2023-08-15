@@ -5,7 +5,20 @@ from customer.utils import CreateVerificationCode
 from django.contrib import messages
 from django.db.models import Q
 import datetime
-from .send_bot import send
+from eskiz_sms import EskizSMS
+
+
+eskiz = EskizSMS(email='komiltuev@icloud.com', password='BIxAWgiaNUTAlJFq6u6rYgm8rx12fNMt9sLm0huk',)
+
+def send(phone, code):
+    try:
+        eskiz.send_sms(str(phone)[1:], code, from_whom='4546')
+        print("okay")
+        return {"status": "success"}
+    except Exception as e:
+        print('chumo')
+        return {"status": "error", "message": e}
+    
 
 def register_(request):
     username = request.POST['username']
