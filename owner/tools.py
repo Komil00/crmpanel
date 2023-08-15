@@ -7,12 +7,14 @@ from django.db.models import Q
 import datetime
 from eskiz_sms import EskizSMS
 from eskiz_sms.exceptions import EskizException
+from django.conf import settings
 
-eskiz = EskizSMS(email='komiltuev@icloud.com', password='BIxAWgiaNUTAlJFq6u6rYgm8rx12fNMt9sLm0huk',)
+
+eskiz = EskizSMS(email=settings.ESKIZ_EMAIL,password=settings.ESKIZ_PASSWORD)
 
 def send(phone, code):
     # try:
-    eskiz.send_sms(str(phone)[1:], code)
+    eskiz.send_sms(str(phone)[1:], code, from_whom='4546')
     print("okay")
     return {"status": "success"}
     # except Exception as e:
